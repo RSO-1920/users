@@ -6,7 +6,10 @@
     <groupId>si.fri.rso</groupId>
     <artifactId>users</artifactId>
     <version>1.0.0</version>
-    <packaging>jar</packaging>
+    <modules>
+        <module>users-api</module>
+    </modules>
+    <packaging>pom</packaging>
 
     <name>users</name>
     <description>Users</description>
@@ -37,24 +40,4 @@
             <artifactId>kumuluzee-microProfile-1.0</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.kumuluz.ee</groupId>
-                <artifactId>kumuluzee-maven-plugin</artifactId>
-                <version>${kumuluzee.version}</version>
-                <executions>
-                    <execution>
-                        <id>package</id>
-                        <goals>
-                            <goal>repackage</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
-
 </project>
