@@ -48,6 +48,11 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>com.kumuluz.ee.rest</groupId>
+                <artifactId>kumuluzee-rest-core</artifactId>
+                <version>${kumuluzee-rest.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -56,10 +61,6 @@
             <groupId>com.kumuluz.ee</groupId>
             <artifactId>kumuluzee-microProfile-1.0</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.kumuluz.ee.rest</groupId>
-            <artifactId>kumuluzee-rest-core</artifactId>
-            <version>${kumuluzee-rest.version}</version>
-        </dependency>
+
     </dependencies>
 </project>
