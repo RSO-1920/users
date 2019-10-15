@@ -5,14 +5,18 @@ import si.fri.rso.lib.UserModel;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class UsersBean {
     private List<UserModel> users;
+
+    private Client httpClient;
+    private String baseUrl;
 
     @PostConstruct
     private void init() {
@@ -20,10 +24,11 @@ public class UsersBean {
 
         users.add(new UserModel(1, "Joža", "Novak", "jazsemjoza@gmail.com", "zorogaseka"));
         users.add(new UserModel(2, "Uros", "Zoretic", "zoreticu@gmail.com", "jstgasekam"));
+
+        this.httpClient = ClientBuilder.newClient();
     }
 
     public List<UserModel> getAllUsers() {
-        System.out.println("Getting all users");
         return users;
     }
 
@@ -46,4 +51,24 @@ public class UsersBean {
         return null;
     }
 
+    public boolean delete(Integer userId) {
+        for (UserModel user : users) {
+            if (user.getUser_id().equals(userId)) {
+                users.remove(user);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public UserModel register(UserDTO userRegister) {
+        Integer id = this.users.get(this.users.size() - 1).getUser_id()  + 1;
+
+        UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
+        this.users.add(newUser);
+
+        // TODO: call to channel api..
+
+        return  newUser;
+    }
 }

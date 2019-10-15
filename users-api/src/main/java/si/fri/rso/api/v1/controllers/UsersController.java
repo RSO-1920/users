@@ -34,11 +34,23 @@ public class UsersController {
     }
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("register")
+    public Response register(UserDTO userRegister) {
+        if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity("mail, firstName, lastName or password is missing").build();
+
+        UserModel newUser = usersBean.register(userRegister);
+
+        return Response.status(Response.Status.OK).entity(newUser).build();
+    }
+
+
+
+    @POST
     @Path("login")
     public Response login(UserDTO userLogin) {
         if (userLogin.getUserPassword() == null || userLogin.getUserMail() == null)
-            return Response.status(Response.Status.BAD_REQUEST).entity("id, mail or password is missing").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity("mail or password is missing").build();
 
         UserModel user = usersBean.login(userLogin);
 
@@ -46,5 +58,16 @@ public class UsersController {
             return  Response.status(Response.Status.NOT_FOUND).entity("login failed").build();
 
         return Response.status(Response.Status.OK).entity(user).build();
+    }
+
+    @DELETE
+    @Path("{userId}")
+    public Response delete(@PathParam("userId") Integer userId) {
+        boolean res = usersBean.delete(userId);
+
+        if (!res)
+            Response.status(200).entity("No user deleted").build();
+
+        return Response.status(201).entity("deletion success").build();
     }
 }
