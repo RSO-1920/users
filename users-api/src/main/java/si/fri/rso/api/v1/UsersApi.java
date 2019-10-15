@@ -1,5 +1,6 @@
 package si.fri.rso.api.v1;
 
+import javax.inject.Inject;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 

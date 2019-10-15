@@ -9,6 +9,7 @@
     <modules>
         <module>users-api</module>
         <module>services</module>
+        <module>lib</module>
     </modules>
     <packaging>pom</packaging>
 

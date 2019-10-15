@@ -28,6 +28,12 @@
             <groupId>com.kumuluz.ee</groupId>
             <artifactId>kumuluzee-json-p-jsonp</artifactId>
         </dependency>
+        <dependency>
+            <groupId>si.fri.rso</groupId>
+            <artifactId>lib</artifactId>
+            <version>1.0.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
