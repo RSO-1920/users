@@ -71,4 +71,28 @@ public class UsersBean {
 
         return  newUser;
     }
+
+    public UserModel update(UserDTO userUpdate) {
+        for (UserModel user : users) {
+            if (user.getUser_id().equals(userUpdate.getUserId())) {
+                // update userProperties
+
+                if (userUpdate.getUserFirstName() != null)
+                    user.setUser_first_name(userUpdate.getUserFirstName());
+
+                if (userUpdate.getUserLastName() != null)
+                    user.setUser_last_name(userUpdate.getUserLastName());
+
+                if (userUpdate.getUserMail() != null)
+                    user.setUser_mail(userUpdate.getUserMail());
+
+                if (userUpdate.getUserPassword() != null)
+                    user.setUser_password(userUpdate.getUserPassword());
+
+                return user;
+            }
+        }
+
+        return null;
+    }
 }

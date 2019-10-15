@@ -37,4 +37,20 @@ public class UserModel {
     }
 
 
+    public void setUser_first_name(String userFirstName) {
+        this.userFirstName  = userFirstName;
+    }
+
+    public void setUser_last_name(String userLastName) {
+        this.userLastName = userLastName;
+    }
+
+    public void setUser_mail(String userMail) {
+        this.userMail = userMail;
+    }
+
+    public void setUser_password(String userPassword) {
+        this.userPassword = userPassword;
+    }
+
 }

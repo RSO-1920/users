@@ -44,8 +44,6 @@ public class UsersController {
         return Response.status(Response.Status.OK).entity(newUser).build();
     }
 
-
-
     @POST
     @Path("login")
     public Response login(UserDTO userLogin) {
@@ -56,6 +54,20 @@ public class UsersController {
 
         if (user == null)
             return  Response.status(Response.Status.NOT_FOUND).entity("login failed").build();
+
+        return Response.status(Response.Status.OK).entity(user).build();
+    }
+
+
+    @PUT
+    public Response update(UserDTO userUpdate) {
+        if (userUpdate.getUserId() == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity("object id is missing").build();
+
+        UserModel user = usersBean.update(userUpdate);
+
+        if (user == null)
+            return  Response.status(Response.Status.NOT_FOUND).entity("no user found for update").build();
 
         return Response.status(Response.Status.OK).entity(user).build();
     }
