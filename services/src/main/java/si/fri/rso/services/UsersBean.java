@@ -1,12 +1,18 @@
 package si.fri.rso.services;
 
+import si.fri.rso.lib.ChannelDTO;
 import si.fri.rso.lib.UserDTO;
 import si.fri.rso.lib.UserModel;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +32,7 @@ public class UsersBean {
         users.add(new UserModel(2, "Uros", "Zoretic", "zoreticu@gmail.com", "jstgasekam"));
 
         this.httpClient = ClientBuilder.newClient();
+        baseUrl = "http://localhost:8080/";
     }
 
     public List<UserModel> getAllUsers() {
@@ -67,9 +74,26 @@ public class UsersBean {
         UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
         this.users.add(newUser);
 
-        // TODO: call to channel api..
+        ChannelDTO userChannel = new ChannelDTO();
+        userChannel.setChannelName("channel-"+newUser.getUser_last_name());
+        userChannel.setChannelAdminId(newUser.getUser_id());
 
-        return  newUser;
+        try{
+            Response success = this.httpClient
+                    .target(this.baseUrl + "v1/channels/addChannel")
+                    .request(MediaType.APPLICATION_JSON_TYPE).post( Entity.entity(userChannel, MediaType.APPLICATION_JSON_TYPE));
+
+            if (success.readEntity(String.class).equals("true")) {
+                System.out.println("User channel creation success");
+            } else {
+                System.out.println("User channel creation failed");
+            }
+
+            return newUser;
+        }catch (WebApplicationException | ProcessingException e) {
+            e.printStackTrace();
+            return  newUser;
+        }
     }
 
     public UserModel update(UserDTO userUpdate) {
