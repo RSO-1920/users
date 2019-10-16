@@ -1,6 +1,7 @@
 package si.fri.rso.services;
 
 import si.fri.rso.lib.ChannelDTO;
+import si.fri.rso.lib.ResponseDTO;
 import si.fri.rso.lib.UserDTO;
 import si.fri.rso.lib.UserModel;
 
@@ -68,7 +69,7 @@ public class UsersBean {
         return false;
     }
 
-    public UserModel register(UserDTO userRegister) {
+    public ResponseDTO register(UserDTO userRegister) {
         Integer id = this.users.get(this.users.size() - 1).getUser_id()  + 1;
 
         UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
@@ -85,14 +86,13 @@ public class UsersBean {
 
             if (success.readEntity(String.class).equals("true")) {
                 System.out.println("User channel creation success");
+                return new ResponseDTO(200, "channel creation success", newUser);
             } else {
-                System.out.println("User channel creation failed");
+                return new ResponseDTO(200, "chaneel creation failed", newUser);
             }
-
-            return newUser;
         }catch (WebApplicationException | ProcessingException e) {
             e.printStackTrace();
-            return  newUser;
+            return new ResponseDTO(200, "api for creating channel not reachable", newUser);
         }
     }
 

@@ -1,5 +1,6 @@
 package si.fri.rso.api.v1.controllers;
 
+import si.fri.rso.lib.ResponseDTO;
 import si.fri.rso.lib.UserDTO;
 import si.fri.rso.lib.UserModel;
 import si.fri.rso.services.UsersBean;
@@ -23,53 +24,61 @@ public class UsersController {
     @GET
     public Response getUsers() {
         List<UserModel> users = usersBean.getAllUsers();
-        return Response.status(Response.Status.OK).entity(users).build();
+
+        ResponseDTO responseDTO = new ResponseDTO(200, "", users);
+
+        return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
 
     @GET
     @Path("{userId}")
     public Response getUser(@PathParam("userId") Integer userId) {
         UserModel user = usersBean.getUser(userId);
-        return Response.status(Response.Status.OK).entity(user).build();
+
+        ResponseDTO responseDTO = new ResponseDTO(200, "", user);
+
+        return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
 
     @POST
     @Path("register")
     public Response register(UserDTO userRegister) {
         if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
-            return Response.status(Response.Status.BAD_REQUEST).entity("mail, firstName, lastName or password is missing").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "No password, mail, name or lastname given", new Object())).build();
 
-        UserModel newUser = usersBean.register(userRegister);
+        ResponseDTO responseDTO =  usersBean.register(userRegister);
 
-        return Response.status(Response.Status.OK).entity(newUser).build();
+        return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
 
     @POST
     @Path("login")
     public Response login(UserDTO userLogin) {
         if (userLogin.getUserPassword() == null || userLogin.getUserMail() == null)
-            return Response.status(Response.Status.BAD_REQUEST).entity("mail or password is missing").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "mail or password is missing", new Object())).build();
 
         UserModel user = usersBean.login(userLogin);
 
         if (user == null)
-            return  Response.status(Response.Status.NOT_FOUND).entity("login failed").build();
+            return  Response.status(Response.Status.NOT_FOUND).entity(new ResponseDTO(404, "login failed", new Object())).build();
 
-        return Response.status(Response.Status.OK).entity(user).build();
+        ResponseDTO responseDTO = new ResponseDTO(200, "", user);
+
+        return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
 
 
     @PUT
     public Response update(UserDTO userUpdate) {
         if (userUpdate.getUserId() == null)
-            return Response.status(Response.Status.BAD_REQUEST).entity("object id is missing").build();
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "object id is missing", new Object())).build();
 
         UserModel user = usersBean.update(userUpdate);
 
         if (user == null)
-            return  Response.status(Response.Status.NOT_FOUND).entity("no user found for update").build();
+            return  Response.status(Response.Status.NOT_FOUND).entity(new ResponseDTO(404, "no user found for update", new Object())).build();
 
-        return Response.status(Response.Status.OK).entity(user).build();
+        return Response.status(Response.Status.OK).entity(new ResponseDTO(200, "", user)).build();
     }
 
     @DELETE
@@ -78,8 +87,8 @@ public class UsersController {
         boolean res = usersBean.delete(userId);
 
         if (!res)
-            Response.status(200).entity("No user deleted").build();
+            Response.status(200).entity(new ResponseDTO(200, "no user deleted", new Object())).build();
 
-        return Response.status(201).entity("deletion success").build();
+        return Response.status(201).entity(new ResponseDTO(404, "User deleted with id: "+userId, new Object())).build();
     }
 }
