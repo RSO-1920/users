@@ -51,6 +51,8 @@ public class UsersController {
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
 
+
+    // TODO KLIC STORITVE ZA jwt TOKEN, KI SE BO POTEM POŠILJAL OKUL.
     @POST
     @Path("login")
     public Response login(UserDTO userLogin) {
