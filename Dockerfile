@@ -4,8 +4,8 @@ RUN mkdir /app
 
 WORKDIR /app
 
-ADD ./users-api/target/users-api-1.0.0.jar /app
+ADD ./users-api/target/users-api-SNAPSHOT-1.0.0.jar /app
 
 EXPOSE 8081
 
-CMD ["java", "-jar", "users-api-1.0.0.jar"]
+CMD ["java", "-jar", "users-api-SNAPSHOT-1.0.0.jar"]
