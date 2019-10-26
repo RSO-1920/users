@@ -5,7 +5,8 @@
 
     <groupId>si.fri.rso</groupId>
     <artifactId>users</artifactId>
-    <version>SNAPSHOT-1.0.0</version>
+
+    <version>1.0.0-SNAPSHOT-</version>
     <modules>
         <module>users-api</module>
         <module>services</module>

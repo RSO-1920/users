@@ -10,4 +10,4 @@
 
 ## RUN
 
-*  ```docker run -d --name rso1920-users-api --network rso1920 -e KUMULUZEE_CONFIG_ETCD_HOSTS=http://etcd:2379 -p 8083:8083 rso1920/users:latest```
+*  ``````docker run -d --name rso1920-users-api --network rso1920 -e KUMULUZEE_CONFIG_ETCD_HOSTS=http://etcd:2379 -p 8083:8083 rso1920/users:latest
