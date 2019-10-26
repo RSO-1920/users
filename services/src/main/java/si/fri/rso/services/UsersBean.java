@@ -1,5 +1,6 @@
 package si.fri.rso.services;
 
+import si.fri.rso.config.UsersConfigProperties;
 import si.fri.rso.lib.ChannelDTO;
 import si.fri.rso.lib.ResponseDTO;
 import si.fri.rso.lib.UserDTO;
@@ -7,6 +8,7 @@ import si.fri.rso.lib.UserModel;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
@@ -20,10 +22,13 @@ import java.util.List;
 
 @ApplicationScoped
 public class UsersBean {
+
+    @Inject
+    private UsersConfigProperties configProperties;
+
     private List<UserModel> users;
 
     private Client httpClient;
-    private String baseUrl;
 
     @PostConstruct
     private void init() {
@@ -33,7 +38,6 @@ public class UsersBean {
         users.add(new UserModel(2, "Uros", "Zoretic", "zoreticu@gmail.com", "jstgasekam"));
 
         this.httpClient = ClientBuilder.newClient();
-        baseUrl = "http://localhost:8080/";
     }
 
     public List<UserModel> getAllUsers() {
@@ -75,13 +79,15 @@ public class UsersBean {
         UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
         this.users.add(newUser);
 
+        System.out.println("Config channel url: " + this.configProperties.getChannelApiUrl());
+
         ChannelDTO userChannel = new ChannelDTO();
         userChannel.setChannelName("channel-"+newUser.getUser_last_name());
         userChannel.setChannelAdminId(newUser.getUser_id());
 
         try{
             Response success = this.httpClient
-                    .target(this.baseUrl + "v1/channels/addChannel")
+                    .target(this.configProperties.getChannelApiUrl() + "v1/channels/addChannel")
                     .request(MediaType.APPLICATION_JSON_TYPE).post( Entity.entity(userChannel, MediaType.APPLICATION_JSON_TYPE));
 
             if (success.readEntity(String.class).equals("true")) {
