@@ -1,5 +1,5 @@
 kumuluzee:
-  name: rso-users
+  name: rso1920-users
   env:
     name: dev
   version: 1.0.0
@@ -12,6 +12,11 @@ kumuluzee:
     max-retry-delay-ms: 900000
     etcd:
       hosts: http://localhost:2379
+  discovery:
+    etcd:
+      hosts: http://localhost:2379
+    ttl: 30
+    ping-interval: 5
 
 rest-config:
-  channel-api-url: http://localhost:8081/
+  channel-api-add-channel-path: /v1/channels/addChannel

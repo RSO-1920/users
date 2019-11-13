@@ -9,14 +9,13 @@ import javax.enterprise.context.ApplicationScoped;
 @ConfigBundle("rest-config")
 public class UsersConfigProperties {
 
-    @ConfigValue(value = "channel-api-url", watch = true)
-    private String channelApiUrl;
+    @ConfigValue(value = "channel-api-add-channel-path", watch = true)
+    private String channelApiAddChannelPath;
 
-    public String getChannelApiUrl() {
-        return this.channelApiUrl;
+    public String getChannelApiAddChannelPath() {
+        return this.channelApiAddChannelPath;
     }
-
-    public void setChannelApiUrl(String channelApiUrl) {
-        this.channelApiUrl = channelApiUrl;
+    public void setChannelApiAddChannelPath (String channelApiAddChannelPath) {
+        this.channelApiAddChannelPath = channelApiAddChannelPath;
     }
 }

@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rso1920-users-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rso1920-users
+  template:
+    metadata:
+      labels:
+        app: rso1920-users
+    spec:
+      containers:
+      - image: rso1920/users:latest
+        name: rso1920-users
+        env:
+          - name: KUMULUZEE_DISCOVERY_ETCD_HOSTS
+            value: http://etcd:2379
+          - name: KUMULUZEE_CONFIG_ETCD_HOSTS
+            value: http://etcd:2379
+          - name: KUMULUZEE_SERVER_BASEURL
+            value: http://localhost:8083
+        ports:
+        - containerPort: 8083
+          name: server-users
+          protocol: TCP
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rso1920-users
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 8083
+    protocol: TCP
+    targetPort: server-users
+  selector:
+    app: rso1920-users

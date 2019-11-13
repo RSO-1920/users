@@ -1,5 +1,6 @@
 package si.fri.rso.services;
 
+import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import si.fri.rso.config.UsersConfigProperties;
 import si.fri.rso.lib.ChannelDTO;
 import si.fri.rso.lib.ResponseDTO;
@@ -19,12 +20,17 @@ import javax.ws.rs.core.Response;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class UsersBean {
 
     @Inject
     private UsersConfigProperties configProperties;
+
+    @Inject
+    @DiscoverService(value = "rso1920-channels")
+    private Optional<String> channelsUrl;
 
     private List<UserModel> users;
 
@@ -74,12 +80,17 @@ public class UsersBean {
     }
 
     public ResponseDTO register(UserDTO userRegister) {
+        System.out.println("url: " + this.channelsUrl);
         Integer id = this.users.get(this.users.size() - 1).getUser_id()  + 1;
 
         UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
         this.users.add(newUser);
 
-        System.out.println("Config channel url: " + this.configProperties.getChannelApiUrl());
+        if (!this.channelsUrl.isPresent()) {
+            return new ResponseDTO(200, "no base url for channel api", newUser);
+        }
+
+        System.out.println("Config channel url: " + this.channelsUrl.get() + this.configProperties.getChannelApiAddChannelPath());
 
         ChannelDTO userChannel = new ChannelDTO();
         userChannel.setChannelName("channel-"+newUser.getUser_last_name());
@@ -87,7 +98,7 @@ public class UsersBean {
 
         try{
             Response success = this.httpClient
-                    .target(this.configProperties.getChannelApiUrl() + "v1/channels/addChannel")
+                    .target(this.channelsUrl.get() + this.configProperties.getChannelApiAddChannelPath())
                     .request(MediaType.APPLICATION_JSON_TYPE).post( Entity.entity(userChannel, MediaType.APPLICATION_JSON_TYPE));
 
             if (success.readEntity(String.class).equals("true")) {
