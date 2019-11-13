@@ -21,7 +21,7 @@ spec:
           - name: KUMULUZEE_CONFIG_ETCD_HOSTS
             value: http://etcd:2379
           - name: KUMULUZEE_SERVER_BASEURL
-            value: http://localhost:8083
+            value: http://35.238.67.18:8083:8083
         ports:
         - containerPort: 8083
           name: server-users
