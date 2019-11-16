@@ -19,4 +19,4 @@ kumuluzee:
     ping-interval: 5
 
 rest-config:
-  channel-api-add-channel-path: /v1/channels/addChannel
+  channel-api-add-channel-path: /v1/channels/createChannel

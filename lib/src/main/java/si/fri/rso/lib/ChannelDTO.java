@@ -2,22 +2,27 @@ package si.fri.rso.lib;
 
 
 public class ChannelDTO {
-
+    private Integer adminId;
     private String channelName;
-    private Integer channelAdminId;
+    private Integer channelType;
 
     public String getChannelName() {
-        return this.channelName;
+        return channelName;
     }
-    public Integer getChannelAdminId() {
-        return this.channelAdminId;
+    public Integer getAdminId() {
+        return adminId;
+    }
+    public Integer getChannelType() {
+        return channelType;
     }
 
-    public void setChannelAdminId(Integer channelAdminId) {
-        this.channelAdminId = channelAdminId;
+    public void setAdminId(Integer adminId) {
+        this.adminId = adminId;
     }
-
     public void setChannelName(String channelName) {
         this.channelName = channelName;
+    }
+    public void setChannelType(Integer channelType) {
+        this.channelType = channelType;
     }
 }

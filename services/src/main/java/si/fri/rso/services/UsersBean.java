@@ -94,18 +94,20 @@ public class UsersBean {
 
         ChannelDTO userChannel = new ChannelDTO();
         userChannel.setChannelName("channel-"+newUser.getUser_last_name());
-        userChannel.setChannelAdminId(newUser.getUser_id());
+        userChannel.setAdminId(newUser.getUser_id());
+        userChannel.setChannelType(1);
 
         try{
             Response success = this.httpClient
                     .target(this.channelsUrl.get() + this.configProperties.getChannelApiAddChannelPath())
                     .request(MediaType.APPLICATION_JSON_TYPE).post( Entity.entity(userChannel, MediaType.APPLICATION_JSON_TYPE));
 
-            if (success.readEntity(String.class).equals("true")) {
+            System.out.println("Channel creation status: " + success.getStatus());
+            if (success.getStatus() == 200) {
                 System.out.println("User channel creation success");
                 return new ResponseDTO(200, "channel creation success", newUser);
             } else {
-                return new ResponseDTO(200, "chaneel creation failed", newUser);
+                return new ResponseDTO(200, "channel creation failed", newUser);
             }
         }catch (WebApplicationException | ProcessingException e) {
             e.printStackTrace();
