@@ -21,7 +21,7 @@ spec:
           - name: KUMULUZEE_CONFIG_ETCD_HOSTS
             value: http://etcd:2379
           - name: KUMULUZEE_SERVER_BASEURL
-            value: http://35.238.67.18:8083:8083
+            value: http://10.28.6.185:8083
         ports:
         - containerPort: 8083
           name: server-users
@@ -33,7 +33,7 @@ kind: Service
 metadata:
   name: rso1920-users
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - port: 8083
     protocol: TCP
