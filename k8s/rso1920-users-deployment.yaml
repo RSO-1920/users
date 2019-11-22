@@ -22,10 +22,24 @@ spec:
             value: http://etcd:2379
           - name: KUMULUZEE_SERVER_BASEURL
             value: http://10.28.6.185:8083
+          - name: KUMULUZEE_HEALTH_CHECKS_ETCDHEALTHCHECK_CONNECTIONURL
+            value: http://etcd:2379/health
         ports:
         - containerPort: 8083
           name: server-users
           protocol: TCP
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: server-users
+          initialDelaySeconds: 20
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: server-users
+          initialDelaySeconds: 20
+          periodSeconds: 3
 ---
 
 apiVersion: v1

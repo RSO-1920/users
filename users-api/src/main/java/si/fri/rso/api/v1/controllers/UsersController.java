@@ -1,5 +1,8 @@
 package si.fri.rso.api.v1.controllers;
 
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Metered;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import si.fri.rso.lib.ResponseDTO;
 import si.fri.rso.lib.UserDTO;
 import si.fri.rso.lib.UserModel;
@@ -22,6 +25,9 @@ public class UsersController {
     private UsersBean usersBean;
 
     @GET
+    @Timed(name = "users_time_all")
+    @Counted(name = "users_counted_all")
+    @Metered(name = "users_metered_all")
     public Response getUsers() {
         List<UserModel> users = usersBean.getAllUsers();
 
@@ -31,6 +37,9 @@ public class UsersController {
     }
 
     @GET
+    @Timed(name = "users_time_userId")
+    @Counted(name = "users_counted_userId")
+    @Metered(name = "users_metered_userId")
     @Path("{userId}")
     public Response getUser(@PathParam("userId") Integer userId) {
         UserModel user = usersBean.getUser(userId);
@@ -41,6 +50,9 @@ public class UsersController {
     }
 
     @POST
+    @Timed(name = "users_time_register")
+    @Counted(name = "users_counted_register")
+    @Metered(name = "users_metered_register")
     @Path("register")
     public Response register(UserDTO userRegister) {
         if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
@@ -54,6 +66,9 @@ public class UsersController {
 
     // TODO KLIC STORITVE ZA jwt TOKEN, KI SE BO POTEM POŠILJAL OKUL.
     @POST
+    @Timed(name = "users_time_login")
+    @Counted(name = "users_counted_login")
+    @Metered(name = "users_metered_login")
     @Path("login")
     public Response login(UserDTO userLogin) {
         if (userLogin.getUserPassword() == null || userLogin.getUserMail() == null)
@@ -71,6 +86,9 @@ public class UsersController {
 
 
     @PUT
+    @Timed(name = "users_time_update")
+    @Counted(name = "users_counted_update")
+    @Metered(name = "users_metered_update")
     public Response update(UserDTO userUpdate) {
         if (userUpdate.getUserId() == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "object id is missing", new Object())).build();
@@ -84,6 +102,9 @@ public class UsersController {
     }
 
     @DELETE
+    @Timed(name = "users_time_delete")
+    @Counted(name = "users_counted_delete")
+    @Metered(name = "users_metered_delete")
     @Path("{userId}")
     public Response delete(@PathParam("userId") Integer userId) {
         boolean res = usersBean.delete(userId);
