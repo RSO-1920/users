@@ -11,6 +11,7 @@ import si.fri.rso.services.UsersBean;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
@@ -18,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Log
 @ApplicationScoped
@@ -29,8 +31,8 @@ public class UsersController {
     @Inject
     private UsersBean usersBean;
 
-    @Context
-    ContainerRequestContext reqContext;
+    @Inject
+    HttpServletRequest requestheader;
 
     @GET
     @Timed(name = "users_time_all")
@@ -66,11 +68,10 @@ public class UsersController {
         if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "No password, mail, name or lastname given", new Object())).build();
 
-        System.out.println("req context property unique request id: " + reqContext.getProperty("uniqueRequestId"));
+        String requestHeader = requestheader.getHeader("uniqueRequestId");
+        System.out.println("HEADER: " + requestHeader);
 
-         ;
-
-        ResponseDTO responseDTO =  usersBean.register(userRegister, reqContext.getProperty("uniqueRequestId") != null ? reqContext.getProperty("uniqueRequestId").toString() : null);
+        ResponseDTO responseDTO =  usersBean.register(userRegister, requestHeader != null ? requestHeader : UUID.randomUUID().toString());
 
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
