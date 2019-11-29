@@ -1,5 +1,6 @@
 package si.fri.rso.api.v1.controllers;
 
+import com.kumuluz.ee.logs.cdi.Log;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -11,10 +12,14 @@ import si.fri.rso.services.UsersBean;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.*;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.List;
+import java.util.Optional;
 
+@Log
 @ApplicationScoped
 @Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -23,6 +28,9 @@ public class UsersController {
 
     @Inject
     private UsersBean usersBean;
+
+    @Context
+    ContainerRequestContext reqContext;
 
     @GET
     @Timed(name = "users_time_all")
@@ -58,7 +66,11 @@ public class UsersController {
         if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "No password, mail, name or lastname given", new Object())).build();
 
-        ResponseDTO responseDTO =  usersBean.register(userRegister);
+        System.out.println("req context property unique request id: " + reqContext.getProperty("uniqueRequestId"));
+
+         ;
+
+        ResponseDTO responseDTO =  usersBean.register(userRegister, reqContext.getProperty("uniqueRequestId") != null ? reqContext.getProperty("uniqueRequestId").toString() : null);
 
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }

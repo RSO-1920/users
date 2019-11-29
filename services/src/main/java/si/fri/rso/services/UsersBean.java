@@ -28,31 +28,27 @@ public class UsersBean {
     @Inject
     private UsersConfigProperties configProperties;
 
+    @Inject UsersObject usersObject;
+
     @Inject
     @DiscoverService(value = "rso1920-channels")
     private Optional<String> channelsUrl;
-
-    private List<UserModel> users;
 
     private Client httpClient;
 
     @PostConstruct
     private void init() {
-        users = new ArrayList<UserModel>();
-
-        users.add(new UserModel(1, "Joža", "Novak", "jazsemjoza@gmail.com", "zorogaseka"));
-        users.add(new UserModel(2, "Uros", "Zoretic", "zoreticu@gmail.com", "jstgasekam"));
 
         this.httpClient = ClientBuilder.newClient();
     }
 
     public List<UserModel> getAllUsers() {
-        return users;
+        return usersObject.getUsers();
     }
 
     public UserModel getUser(Integer userId) {
 
-        for (UserModel user : users) {
+        for (UserModel user : usersObject.getUsers()) {
             if (user.getUser_id().equals(userId)) {
                 return user;
             }
@@ -62,7 +58,7 @@ public class UsersBean {
 
     public UserModel login(UserDTO userLogin) {
 
-        for (UserModel user : users) {
+        for (UserModel user : usersObject.getUsers()) {
             if (user.getUser_mail().equals(userLogin.getUserMail()) && user.getUser_password().equals(userLogin.getUserPassword()) )
                 return user;
         }
@@ -70,21 +66,24 @@ public class UsersBean {
     }
 
     public boolean delete(Integer userId) {
-        for (UserModel user : users) {
+        for (UserModel user : usersObject.getUsers()) {
             if (user.getUser_id().equals(userId)) {
-                users.remove(user);
+                usersObject.removeUser(user);
                 return true;
             }
         }
         return false;
     }
 
-    public ResponseDTO register(UserDTO userRegister) {
+    public ResponseDTO register(UserDTO userRegister, String uniqueRequestId) {
         System.out.println("url: " + this.channelsUrl);
-        Integer id = this.users.get(this.users.size() - 1).getUser_id()  + 1;
+        Integer id = this.usersObject.getUsers().get(this.usersObject.getUsers().size() - 1).getUser_id()  + 1;
 
         UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
-        this.users.add(newUser);
+        this.usersObject.addUser(newUser);
+
+        System.out.println("new user: ");
+        System.out.println("REQUEST: " + uniqueRequestId);
 
         if (!this.channelsUrl.isPresent()) {
             return new ResponseDTO(200, "no base url for channel api", newUser);
@@ -100,7 +99,9 @@ public class UsersBean {
         try{
             Response success = this.httpClient
                     .target(this.channelsUrl.get() + this.configProperties.getChannelApiAddChannelPath())
-                    .request(MediaType.APPLICATION_JSON_TYPE).post( Entity.entity(userChannel, MediaType.APPLICATION_JSON_TYPE));
+                    .request(MediaType.APPLICATION_JSON_TYPE)
+                    .header("uniqueRequestId", uniqueRequestId)
+                    .post( Entity.entity(userChannel, MediaType.APPLICATION_JSON_TYPE));
 
             System.out.println("Channel creation status: " + success.getStatus());
             if (success.getStatus() == 200) {
@@ -116,7 +117,7 @@ public class UsersBean {
     }
 
     public UserModel update(UserDTO userUpdate) {
-        for (UserModel user : users) {
+        for (UserModel user : usersObject.getUsers()) {
             if (user.getUser_id().equals(userUpdate.getUserId())) {
                 // update userProperties
 
