@@ -1,6 +1,7 @@
 package si.fri.rso.api.v1.controllers;
 
 import com.kumuluz.ee.logs.cdi.Log;
+import javassist.NotFoundException;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -79,13 +80,20 @@ public class UsersController {
     @Metered(name = "users_metered_register")
     @Path("register")
     public Response register(UserDTO userRegister) {
-        if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
+        if (userRegister.getUserName() == null || userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "No password, mail, name or lastname given", new Object())).build();
 
         try{
-            keycloakBean.createUser(userRegister.getUserName(), userRegister.getUserFirstName(), userRegister.getUserLastName(),  userRegister.getUserPassword(), userRegister.getUserMail());
+            String createsUser = keycloakBean.createUser(userRegister.getUserName(), userRegister.getUserFirstName(), userRegister.getUserLastName(),  userRegister.getUserPassword(), userRegister.getUserMail());
+            if(createsUser.length() > 0){
+                System.out.println("ERROR: " + createsUser);
+            }
+            else{
+                String createdKeycloakID = keycloakBean.getUserID(userRegister.getUserName());
+                System.out.println("Keycloak user ID: " + createdKeycloakID); // TODO: <--------- Zoro tle mas ID na novo ustvarjenega keycloak userja
+            }
         }
-        catch (IOException e){
+        catch (IOException | NotFoundException e){
             System.out.println(e);
         }
 

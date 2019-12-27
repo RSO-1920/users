@@ -1,6 +1,8 @@
 package si.fri.rso.services;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import javassist.NotFoundException;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -28,7 +30,7 @@ public class KeycloakBean {
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
         RequestBody body = RequestBody.create(mediaType, "username=admin&password=password&grant_type=password&client_id=admin-cli");
         Request request = new Request.Builder()
-                .url("http://localhost:8082/auth/realms/master/protocol/openid-connect/token")
+                .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/realms/master/protocol/openid-connect/token")
                 .post(body)
                 .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .build();
@@ -41,7 +43,7 @@ public class KeycloakBean {
     public JSONArray getAllUsers() throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://localhost:8082/auth/admin/realms/customers-realm/users")
+                .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users")
                 .get()
                 .addHeader("authorization", "Bearer " + getMasterAccesToken())
                 .build();
@@ -50,6 +52,23 @@ public class KeycloakBean {
         JSONArray Jarray = new JSONArray(response.body().string());
         return Jarray;
     }
+    public String getUserID(String username) throws IOException, NotFoundException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users?username="+username)
+                .get()
+                .addHeader("authorization", "Bearer " + getMasterAccesToken())
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String responseBodyString = response.body().string();
+        responseBodyString = responseBodyString.substring(1, responseBodyString.length() - 1);
+        if(responseBodyString.length() == 0){
+            throw new NotFoundException("Specified suer NOT FOUND");
+        }
+        JSONObject Jobject = new JSONObject(responseBodyString);
+        return Jobject.get("id").toString();
+    }
 
     public String createUser(String username, String firstname, String lastname, String password, String email) throws IOException {
         OkHttpClient client = new OkHttpClient();
@@ -57,16 +76,14 @@ public class KeycloakBean {
         MediaType mediaType = MediaType.parse("application/json");
         RequestBody body = RequestBody.create(mediaType, "{\r\n\t \"username\": \" "+ username +"\",\r\n\t \"emailVerified\": false,\r\n\t \"firstName\": \" "+ firstname +" \",\r\n\t \"lastName\": \""+ lastname +"\",\r\n\t \"credentials\": [\r\n\t     {\r\n\t         \"type\": \"password\",\r\n\t         \"value\": \""+ password +"*\",\r\n\t         \"temporary\": false\r\n\t     }\r\n\t ],\r\n\t \"email\": \""+ email +"\"\r\n}");
         Request request = new Request.Builder()
-                .url("http://localhost:8082/auth/admin/realms/customers-realm/users")
+                .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users")
                 .post(body)
-                .addHeader("Content-Type", "application/json")
+                //.addHeader("Content-Type", "application/json")
                 .addHeader("authorization", "Bearer "+ getMasterAccesToken())
                 .build();
 
         Response response = client.newCall(request).execute();
-        System.out.println(response.body().string());
-        System.out.println(response.toString());
-        return response.toString();
+        return response.body().string().toString();
     }
 
     public static String generateRandomString(int length) {
