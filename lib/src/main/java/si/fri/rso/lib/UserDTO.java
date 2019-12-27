@@ -3,6 +3,7 @@ package si.fri.rso.lib;
 public class UserDTO {
 
     private Integer userId;
+    private String userName;
     private String userFirstName;
     private String userLastName;
     private String userMail;
@@ -13,6 +14,13 @@ public class UserDTO {
     }
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getUserFirstName() {

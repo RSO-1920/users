@@ -8,7 +8,10 @@ import si.fri.rso.lib.ResponseDTO;
 import si.fri.rso.lib.UserDTO;
 import si.fri.rso.lib.UserModel;
 import si.fri.rso.services.UsersBean;
+import si.fri.rso.services.KeycloakBean;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -17,15 +20,16 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 @Log
 @ApplicationScoped
-@Path("/users")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Path("/users")
 public class UsersController {
 
     @Inject
@@ -33,6 +37,9 @@ public class UsersController {
 
     @Inject
     HttpServletRequest requestheader;
+
+    @Inject
+    KeycloakBean keycloakBean;
 
     @GET
     @Timed(name = "users_time_all")
@@ -43,6 +50,13 @@ public class UsersController {
 
         ResponseDTO responseDTO = new ResponseDTO(200, "", users);
 
+        /*try{
+            return Response.status(Response.Status.OK).entity(keycloakBean.getAllUsers().toList()).build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Response.status(Response.Status.OK).entity("err").build();
+        */
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
 
@@ -67,6 +81,13 @@ public class UsersController {
     public Response register(UserDTO userRegister) {
         if (userRegister.getUserPassword() == null || userRegister.getUserMail() == null || userRegister.getUserFirstName() == null ||userRegister.getUserLastName() == null)
             return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "No password, mail, name or lastname given", new Object())).build();
+
+        try{
+            keycloakBean.createUser(userRegister.getUserName(), userRegister.getUserFirstName(), userRegister.getUserLastName(),  userRegister.getUserPassword(), userRegister.getUserMail());
+        }
+        catch (IOException e){
+            System.out.println(e);
+        }
 
         String requestHeader = requestheader.getHeader("uniqueRequestId");
         System.out.println("HEADER: " + requestHeader);
