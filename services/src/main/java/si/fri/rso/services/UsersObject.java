@@ -15,8 +15,8 @@ public class UsersObject {
     private void init() {
         users = new ArrayList<UserModel>();
 
-        users.add(new UserModel(1, "Joža", "Novak", "jazsemjoza@gmail.com", "zorogaseka"));
-        users.add(new UserModel(2, "Uros", "Zoretic", "zoreticu@gmail.com", "jstgasekam"));
+        users.add(new UserModel("1", "Joža", "Novak", "jazsemjoza@gmail.com", "zorogaseka"));
+        users.add(new UserModel("2", "Uros", "Zoretic", "zoreticu@gmail.com", "jstgasekam"));
     }
 
     public List<UserModel> getUsers() {

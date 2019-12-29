@@ -42,20 +42,6 @@ public class UsersBean {
         this.httpClient = ClientBuilder.newClient();
     }
 
-    public List<UserModel> getAllUsers() {
-        return usersObject.getUsers();
-    }
-
-    public UserModel getUser(Integer userId) {
-
-        for (UserModel user : usersObject.getUsers()) {
-            if (user.getUser_id().equals(userId)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
     public UserModel login(UserDTO userLogin) {
 
         for (UserModel user : usersObject.getUsers()) {
@@ -65,28 +51,17 @@ public class UsersBean {
         return null;
     }
 
-    public boolean delete(Integer userId) {
-        for (UserModel user : usersObject.getUsers()) {
-            if (user.getUser_id().equals(userId)) {
-                usersObject.removeUser(user);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public ResponseDTO register(UserDTO userRegister, String uniqueRequestId) {
+    public ResponseDTO register(UserDTO userRegister, String uniqueRequestId, String userId) {
         System.out.println("url: " + this.channelsUrl);
-        Integer id = this.usersObject.getUsers().get(this.usersObject.getUsers().size() - 1).getUser_id()  + 1;
 
-        UserModel newUser = new UserModel(id, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
+        UserModel newUser = new UserModel(userId, userRegister.getUserFirstName(), userRegister.getUserLastName(), userRegister.getUserMail(), userRegister.getUserPassword());
         this.usersObject.addUser(newUser);
 
         System.out.println("new user: ");
         System.out.println("REQUEST: " + uniqueRequestId);
 
         if (!this.channelsUrl.isPresent()) {
-            return new ResponseDTO(200, "no base url for channel api", newUser);
+            return new ResponseDTO(400, "no base url for channel api", newUser);
         }
 
         System.out.println("Config channel url: " + this.channelsUrl.get() + this.configProperties.getChannelApiAddChannelPath());
@@ -108,35 +83,11 @@ public class UsersBean {
                 System.out.println("User channel creation success");
                 return new ResponseDTO(200, "channel creation success", newUser);
             } else {
-                return new ResponseDTO(200, "channel creation failed", newUser);
+                return new ResponseDTO(400, "channel creation failed", newUser);
             }
         }catch (WebApplicationException | ProcessingException e) {
             e.printStackTrace();
-            return new ResponseDTO(200, "api for creating channel not reachable", newUser);
+            return new ResponseDTO(400, "api for creating channel not reachable", newUser);
         }
-    }
-
-    public UserModel update(UserDTO userUpdate) {
-        for (UserModel user : usersObject.getUsers()) {
-            if (user.getUser_id().equals(userUpdate.getUserId())) {
-                // update userProperties
-
-                if (userUpdate.getUserFirstName() != null)
-                    user.setUser_first_name(userUpdate.getUserFirstName());
-
-                if (userUpdate.getUserLastName() != null)
-                    user.setUser_last_name(userUpdate.getUserLastName());
-
-                if (userUpdate.getUserMail() != null)
-                    user.setUser_mail(userUpdate.getUserMail());
-
-                if (userUpdate.getUserPassword() != null)
-                    user.setUser_password(userUpdate.getUserPassword());
-
-                return user;
-            }
-        }
-
-        return null;
     }
 }
