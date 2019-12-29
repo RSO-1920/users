@@ -93,11 +93,11 @@ public class KeycloakBean {
         OkHttpClient client = new OkHttpClient();
 
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "{\r\n\t \"username\": \" "+ username +"\",\r\n\t \"emailVerified\": false,\r\n\t \"firstName\": \" "+ firstname +" \",\r\n\t \"lastName\": \""+ lastname +"\",\r\n\t \"credentials\": [\r\n\t     {\r\n\t         \"type\": \"password\",\r\n\t         \"value\": \""+ password +"\",\r\n\t         \"temporary\": false\r\n\t     }\r\n\t ],\r\n\t \"email\": \""+ email +"\",\r\n\t \"enabled\": true\r\n}");
+        RequestBody body = RequestBody.create(mediaType, "{\r\n\t \"username\": \""+ username +"\",\r\n\t \"emailVerified\": false,\r\n\t \"firstName\": \""+ firstname +"\",\r\n\t \"lastName\": \""+ lastname +"\",\r\n\t \"credentials\": [\r\n\t     {\r\n\t         \"type\": \"password\",\r\n\t         \"value\": \""+ password +"\",\r\n\t         \"temporary\": false\r\n\t     }\r\n\t ],\r\n\t \"email\": \""+ email +"\",\r\n\t \"enabled\": true\r\n}");
         Request request = new Request.Builder()
                 .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users")
                 .post(body)
-                //.addHeader("Content-Type", "application/json")
+                .addHeader("Content-Type", "application/json")
                 .addHeader("authorization", "Bearer "+ getMasterAccesToken())
                 .build();
 
