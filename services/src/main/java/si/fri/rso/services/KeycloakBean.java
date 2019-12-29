@@ -40,7 +40,22 @@ public class KeycloakBean {
         return Jobject.get("access_token").toString();
     }
 
+    public boolean deleteUser(String userId) throws IOException, NotFoundException {
+        System.out.println("URL: " +ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users/"+userId);
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users/"+userId)
+                .delete()
+                .addHeader("authorization", "Bearer " + getMasterAccesToken())
+                .build();
+
+        Response response = client.newCall(request).execute();
+
+        return response.isSuccessful();
+    }
+
     public JSONArray getAllUsers() throws IOException {
+        System.out.println("URL: " + ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users");
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users")
@@ -52,7 +67,8 @@ public class KeycloakBean {
         JSONArray Jarray = new JSONArray(response.body().string());
         return Jarray;
     }
-    public String getUserID(String username) throws IOException, NotFoundException {
+
+    public JSONObject getUser(String username) throws IOException, NotFoundException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/admin/realms/customers-realm/users?username="+username)
@@ -64,10 +80,13 @@ public class KeycloakBean {
         String responseBodyString = response.body().string();
         responseBodyString = responseBodyString.substring(1, responseBodyString.length() - 1);
         if(responseBodyString.length() == 0){
-            throw new NotFoundException("Specified suer NOT FOUND");
+            throw new NotFoundException("Specified user NOT FOUND");
         }
         JSONObject Jobject = new JSONObject(responseBodyString);
-        return Jobject.get("id").toString();
+
+        return Jobject;
+
+        // return Jobject.get("id").toString();
     }
 
     public String createUser(String username, String firstname, String lastname, String password, String email) throws IOException {
