@@ -32,6 +32,7 @@
         <kumuluzee-config-mp.version>1.3.0</kumuluzee-config-mp.version>
         <kumuluzee-metrics.version>2.0.1</kumuluzee-metrics.version>
         <kumuluzee-logs.version>1.3.1</kumuluzee-logs.version>
+        <kumuluzee-cors.version>1.1.0-SNAPSHOT</kumuluzee-cors.version>
 
         <kumuluzee-security.version>1.2.0-SNAPSHOT</kumuluzee-security.version>
         <keycloak.version>5.0.0</keycloak.version>
@@ -81,12 +82,15 @@
                 <artifactId>kumuluzee-metrics-core</artifactId>
                 <version>${kumuluzee-metrics.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.kumuluz.ee.cors</groupId>
+                <artifactId>kumuluzee-cors</artifactId>
+                <version>${kumuluzee-cors.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-
-
         <dependency>
             <groupId>com.kumuluz.ee</groupId>
             <artifactId>kumuluzee-cdi-weld</artifactId>
@@ -101,7 +105,10 @@
             <artifactId>keycloak-jetty94-adapter</artifactId>
             <version>${keycloak.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.kumuluz.ee.cors</groupId>
+            <artifactId>kumuluzee-cors</artifactId>
+        </dependency>
 
 
 

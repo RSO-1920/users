@@ -55,6 +55,10 @@ kumuluzee:
         "ssl-required": "external",
         "resource": "customers-api"
       }'
+  cors-filter:
+    servlet:
+      allow-generic-http-requests: true
+      allow-origin: "*"
 
 rest-config:
   channel-api-add-channel-path: /v1/channels/createChannel

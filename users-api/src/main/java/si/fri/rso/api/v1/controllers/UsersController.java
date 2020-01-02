@@ -7,6 +7,7 @@ import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Metered;
 import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import si.fri.rso.lib.ResponseDTO;
 import si.fri.rso.lib.UserDTO;
@@ -52,9 +53,6 @@ public class UsersController {
     public Response getUsers() {
         try {
             JSONArray Jarray = keycloakBean.getAllUsers();
-
-            System.out.println("ALL results: ");
-            System.out.println(Jarray);
             Gson gson = new Gson();
             Object object = gson.fromJson(String.valueOf(Jarray), Object.class);
             ResponseDTO responseDTO = new ResponseDTO(200, "", object);
@@ -122,23 +120,33 @@ public class UsersController {
         }
     }
 
-
-    // TODO KLIC STORITVE ZA jwt TOKEN, KI SE BO POTEM POŠILJAL OKUL.
     @POST
     @Timed(name = "users_time_login")
     @Counted(name = "users_counted_login")
     @Metered(name = "users_metered_login")
     @Path("login")
     public Response login(UserDTO userLogin) {
-        if (userLogin.getUserPassword() == null || userLogin.getUserMail() == null)
-            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "mail or password is missing", new Object())).build();
+        if (userLogin.getUserPassword() == null || userLogin.getUserName() == null)
+            return Response.status(Response.Status.BAD_REQUEST).entity(new ResponseDTO(400, "username or password is missing", new Object())).build();
 
-        UserModel user = usersBean.login(userLogin);
+        JSONObject Jobject = null;
+        String authToken = "";
 
-        if (user == null)
-            return  Response.status(Response.Status.NOT_FOUND).entity(new ResponseDTO(404, "login failed", new Object())).build();
+        try{
+            authToken = keycloakBean.getUserAuthenticationToken(userLogin.getUserName(), userLogin.getUserPassword());
+            Jobject = keycloakBean.getUser(userLogin.getUserName());
+        } catch (IOException | NotFoundException | JSONException e) {
+            //e.printStackTrace();
+            return Response.status(Response.Status.OK).entity("Log In FAILED!").build();
+        }
 
-        ResponseDTO responseDTO = new ResponseDTO(200, "", user);
+        Gson gson = new Gson();
+        Jobject.accumulate("authToken", authToken);
+        Object object = gson.fromJson(String.valueOf(Jobject), Object.class);
+        //System.out.println(Jobject);
+        ResponseDTO responseDTO = new ResponseDTO(200, "", object);
+
+        //TODO: Send responseDTO to keycloakAuth service here !
 
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }

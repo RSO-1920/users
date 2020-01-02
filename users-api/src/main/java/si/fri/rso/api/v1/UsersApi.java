@@ -6,7 +6,6 @@ import javax.annotation.security.DeclareRoles;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-@DeclareRoles({"user", "admin"})
 @RegisterService(value = "rso1920-users")
 @ApplicationPath("/v1")
 public class UsersApi extends Application {

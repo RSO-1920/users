@@ -15,9 +15,10 @@ import java.security.SecureRandom;
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
 
-@RequestScoped
+@ApplicationScoped
 public class KeycloakBean {
 
     private static SecureRandom random = new SecureRandom();private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
@@ -105,6 +106,23 @@ public class KeycloakBean {
         return response.body().string().toString();
     }
 
+    public String getUserAuthenticationToken(String username, String password) throws IOException {
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();
+        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        RequestBody body = RequestBody.create(mediaType, "username="+username+"&password="+password+"&grant_type=password&client_id=customers-app&scope=openid");
+        Request request = new Request.Builder()
+                .url(ConfigurationUtil.getInstance().get("kumuluzee.config.keycloak").get() + "/auth/realms/customers-realm/protocol/openid-connect/token")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .build();
+
+        Response response = client.newCall(request).execute();
+        String accessToken = (new JSONObject(response.body().string()).get("access_token")).toString();
+        System.out.println(accessToken);
+        return accessToken;
+    }
+
     public static String generateRandomString(int length) {
         if (length < 1) throw new IllegalArgumentException();
 
@@ -116,6 +134,14 @@ public class KeycloakBean {
             sb.append(rndChar);
         }
         return sb.toString();
+    }
+
+    public static void sendSuccessfulLoginToAuth(Object user) {
+
+
+
+
+
     }
 
 }
