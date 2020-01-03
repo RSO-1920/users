@@ -2,6 +2,7 @@ package si.fri.rso.services;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.kumuluz.ee.configuration.utils.ConfigurationUtil;
+import com.kumuluz.ee.discovery.annotations.DiscoverService;
 import javassist.NotFoundException;
 import okhttp3.Headers;
 import okhttp3.OkHttpClient;
@@ -13,13 +14,19 @@ import org.json.JSONObject;
 import java.security.SecureRandom;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
 
 @ApplicationScoped
 public class KeycloakBean {
+
+    @Inject
+    @DiscoverService(value = "rso1920-auth")
+    private Optional<String> fileMetadataUrl;
 
     private static SecureRandom random = new SecureRandom();private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
     private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
@@ -118,7 +125,7 @@ public class KeycloakBean {
                 .build();
 
         Response response = client.newCall(request).execute();
-        String accessToken = (new JSONObject(response.body().string()).get("access_token")).toString();
+        String accessToken = "Bearer " + (new JSONObject(response.body().string()).get("access_token")).toString();
         System.out.println(accessToken);
         return accessToken;
     }
@@ -136,12 +143,19 @@ public class KeycloakBean {
         return sb.toString();
     }
 
-    public static void sendSuccessfulLoginToAuth(Object user) {
-
-
-
-
-
+    public void sendSuccessfulLoginToAuth(JSONObject Jobject) throws IOException {
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "{\r\n    \"id\": \""+ Jobject.get("id").toString() +"\",\r\n    \"authToken\": \""+ Jobject.get("authToken").toString() +"\"\r\n}");
+        Request request = new Request.Builder()
+                .url(fileMetadataUrl.get() + "/v1/auth")
+                .method("POST", body)
+                .addHeader("authorization", Jobject.get("authToken").toString())
+                .addHeader("Content-Type", "application/json")
+                .build();
+        Response response = client.newCall(request).execute();
+        //System.out.println(response.body().string());
+        //System.out.println(fileMetadataUrl.get());
     }
 
 }

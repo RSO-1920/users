@@ -146,7 +146,11 @@ public class UsersController {
         //System.out.println(Jobject);
         ResponseDTO responseDTO = new ResponseDTO(200, "", object);
 
-        //TODO: Send responseDTO to keycloakAuth service here !
+        try {
+            keycloakBean.sendSuccessfulLoginToAuth(Jobject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return Response.status(Response.Status.OK).entity(responseDTO).build();
     }
