@@ -21,7 +21,7 @@ spec:
           - name: KUMULUZEE_CONFIG_ETCD_HOSTS
             value: http://etcd:2379
           - name: KUMULUZEE_SERVER_BASEURL
-            value: http://10.28.0.31:8083
+            value: http://10.0.15.57:8083
           - name: KUMULUZEE_HEALTH_CHECKS_ETCDHEALTHCHECK_CONNECTIONURL
             value: http://etcd:2379/health
           - name: KUMULUZEE_CONFIG_KEYCLOAK
@@ -34,6 +34,7 @@ spec:
                       "ssl-required": "external",
                       "resource": "customers-api"
                     }'
+
         ports:
         - containerPort: 8083
           name: server-users
