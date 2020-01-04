@@ -146,6 +146,7 @@ public class KeycloakBean {
     public void sendSuccessfulLoginToAuth(JSONObject Jobject) throws IOException {
         OkHttpClient client = new OkHttpClient().newBuilder().build();
         MediaType mediaType = MediaType.parse("application/json");
+        System.out.println("URL: " + fileMetadataUrl.get() + "/v1/auth");
         RequestBody body = RequestBody.create(mediaType, "{\r\n    \"id\": \""+ Jobject.get("id").toString() +"\",\r\n    \"authToken\": \""+ Jobject.get("authToken").toString() +"\"\r\n}");
         Request request = new Request.Builder()
                 .url(fileMetadataUrl.get() + "/v1/auth")
