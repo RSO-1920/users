@@ -137,7 +137,7 @@ public class UsersController {
             Jobject = keycloakBean.getUser(userLogin.getUserName());
         } catch (IOException | NotFoundException | JSONException e) {
             //e.printStackTrace();
-            return Response.status(Response.Status.OK).entity("Log In FAILED!").build();
+            return Response.status(400).entity("Log In FAILED!").build();
         }
 
         Gson gson = new Gson();
