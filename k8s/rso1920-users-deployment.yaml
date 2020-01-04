@@ -21,19 +21,10 @@ spec:
           - name: KUMULUZEE_CONFIG_ETCD_HOSTS
             value: http://etcd:2379
           - name: KUMULUZEE_SERVER_BASEURL
-            value: http://10.28.0.31:8083
+            value: http://10.0.15.57:8083
           - name: KUMULUZEE_HEALTH_CHECKS_ETCDHEALTHCHECK_CONNECTIONURL
             value: http://etcd:2379/health
-          - name: KUMULUZEE_CONFIG_KEYCLOAK
-            value: http://10.0.14.159:8082
-          - name: KUMULUZEE_SECURITY_KEYCLOAK_JSON
-              value: '{
-                              "realm": "customers-realm",
-                              "bearer-only": true,
-                              "auth-server-url": "http://10.0.14.159:8082/auth/",
-                              "ssl-required": "external",
-                              "resource": "customers-api"
-                            }'
+
         ports:
         - containerPort: 8083
           name: server-users
